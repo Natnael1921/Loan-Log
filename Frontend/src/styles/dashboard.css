@@ -1,3 +1,5 @@
 .dashboard {
-  padding: 40px;
+  display: flex;
+  height: 100vh;
+  background: #f9fafb;
 }

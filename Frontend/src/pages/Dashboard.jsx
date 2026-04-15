@@ -1,10 +1,12 @@
+import Sidebar from "../components/Sidebar";
+import ChatArea from "../components/ChatArea";
 import "../styles/dashboard.css";
 
 const Dashboard = () => {
   return (
     <div className="dashboard">
-      <h1>Dashboard</h1>
-      <p>Welcome! the app is ready </p>
+      <Sidebar />
+      <ChatArea />
     </div>
   );
 };

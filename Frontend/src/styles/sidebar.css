@@ -1,0 +1,80 @@
+.sidebar {
+  width: 280px;
+  background: white;
+  padding: 20px;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-friend {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 15px;
+}
+
+.friends-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: 0.2s;
+}
+
+.friend-item:hover {
+  background: #f3f4f6;
+}
+
+.friend-item.active {
+  background: #dbeafe;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: #bfdbfe;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.friend-info h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.friend-info p {
+  margin: 0;
+  font-size: 12px;
+}
+
+.positive {
+  color: #16a34a;
+}
+
+.negative {
+  color: #dc2626;
+}
