@@ -3,9 +3,11 @@ import { getFriends } from "../services/friend.service";
 import { getBalance } from "../services/balance.service";
 import "../styles/sidebar.css";
 import AddFriendModal from "./AddFriendModal";
+
 const Sidebar = ({ onSelectFriend }) => {
   const [friends, setFriends] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -15,14 +17,9 @@ const Sidebar = ({ onSelectFriend }) => {
         const res = await getFriends(user.token);
 
         const formattedFriends = res.data.map((f) => {
-          if (f.requester._id === user._id) {
-            return f.recipient;
-          } else {
-            return f.requester;
-          }
+          return f.requester._id === user._id ? f.recipient : f.requester;
         });
 
-        //  FETCH BALANCE FOR EACH FRIEND
         const friendsWithBalance = await Promise.all(
           formattedFriends.map(async (friend) => {
             try {
@@ -32,74 +29,91 @@ const Sidebar = ({ onSelectFriend }) => {
                 ...friend,
                 balance: balanceRes.data,
               };
-            } catch (err) {
-              return {
-                ...friend,
-                balance: null,
-              };
+            } catch {
+              return { ...friend, balance: null };
             }
           }),
         );
 
         setFriends(friendsWithBalance);
-      } catch (error) {
-        console.error("Error:", error);
+      } catch (err) {
+        console.error(err);
       }
     };
 
     fetchFriends();
   }, []);
 
+  const handleSelect = (friend) => {
+    setActiveId(friend._id);
+    onSelectFriend(friend);
+  };
+
   return (
     <div className="sidebar">
-      <button className="add-friend" onClick={() => setShowModal(true)}>
-        + Add Friend
-      </button>
+      {/* HEADER */}
+      <div className="sidebar-header">
+        <div>
+          <h2>Friends</h2>
+          <p className="subtext">Manage your lending circle</p>
+        </div>
+
+        <button className="add-friend" onClick={() => setShowModal(true)}>
+          + Add
+        </button>
+      </div>
+
       {showModal && <AddFriendModal onClose={() => setShowModal(false)} />}
+
+      {/* SEARCH */}
       <div className="search-box">
         <input placeholder="Search friends..." />
       </div>
 
+      {/* LIST */}
       <div className="friends-list">
         {friends.length === 0 ? (
-          <p>No friends yet</p>
+          <div className="empty-state">
+            <p>No friends yet</p>
+            <span>Add someone to start tracking loans</span>
+          </div>
         ) : (
-          friends.map((friend) => (
-            <div
-              className="friend-item"
-              key={friend._id}
-              onClick={() => onSelectFriend(friend)}
-            >
-              <div className="avatar">{friend.name?.charAt(0)}</div>
+          friends.map((friend) => {
+            const net = friend.balance?.net;
 
-              <div className="friend-info">
-                <h4>{friend.name}</h4>
+            return (
+              <div
+                key={friend._id}
+                onClick={() => handleSelect(friend)}
+                className={`friend-card ${
+                  activeId === friend._id ? "active" : ""
+                }`}
+              >
+                <div className="avatar">
+                  {friend.name?.charAt(0).toUpperCase()}
+                </div>
 
-                {/*  BALANCE DISPLAY */}
-                {friend.balance ? (
-                  <p
-                    className={
-                      friend.balance.net > 0
-                        ? "positive"
-                        : friend.balance.net < 0
-                          ? "negative"
-                          : ""
-                    }
+                <div className="friend-info">
+                  <div className="name-block">
+                    <h4>{friend.name}</h4>
+                    <span className="hint">Tap to view activity</span>
+                  </div>
+
+                  <span
+                    className={`badge ${
+                      net > 0 ? "positive" : net < 0 ? "negative" : "neutral"
+                    }`}
                   >
-                    {friend.balance.net > 0
-                      ? `${friend.name} owes you +${friend.balance.net} ETB`
-                      : friend.balance.net < 0
-                        ? `You owe ${friend.name} ${Math.abs(
-                            friend.balance.net,
-                          )} ETB`
+                    {net > 0
+                      ? `+${net} ETB`
+                      : net < 0
+                        ? `-${Math.abs(net)} ETB`
                         : "Settled"}
-                  </p>
-                ) : (
-                  <p>Loading...</p>
-                )}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
