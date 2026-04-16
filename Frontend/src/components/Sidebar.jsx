@@ -3,7 +3,7 @@ import { getFriends } from "../services/friend.service";
 import { getBalance } from "../services/balance.service";
 import "../styles/sidebar.css";
 import AddFriendModal from "./AddFriendModal";
-const Sidebar = () => {
+const Sidebar = ({ onSelectFriend }) => {
   const [friends, setFriends] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -65,7 +65,11 @@ const Sidebar = () => {
           <p>No friends yet</p>
         ) : (
           friends.map((friend) => (
-            <div className="friend-item" key={friend._id}>
+            <div
+              className="friend-item"
+              key={friend._id}
+              onClick={() => onSelectFriend(friend)}
+            >
               <div className="avatar">{friend.name?.charAt(0)}</div>
 
               <div className="friend-info">
