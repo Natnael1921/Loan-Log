@@ -6,24 +6,71 @@
   display: flex;
   flex-direction: column;
   padding: 18px;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* HEADER */
 .sidebar-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center; 
   margin-bottom: 14px;
 }
-
 .sidebar-header h2 {
   font-size: 18px;
   font-weight: 700;
   color: #0f172a;
   margin: 0;
 }
+.header-left h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+/* RIGHT SIDE */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
 
+/* NOTIFICATION ICON */
+.notif-wrapper {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notif-wrapper:hover {
+  background: #f1f5f9;
+}
+
+/* BADGE */
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
 .subtext {
   font-size: 12px;
   color: #94a3b8;
@@ -74,7 +121,7 @@
   padding-right: 6px;
 }
 
-/* SCROLLBAR (premium feel) */
+/* SCROLLBAR  */
 .friends-list::-webkit-scrollbar {
   width: 6px;
 }

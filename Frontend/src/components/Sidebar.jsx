@@ -1,34 +1,43 @@
 import { useEffect, useState } from "react";
-import { getFriends } from "../services/friend.service";
+import { Bell } from "lucide-react";
+
+import { getFriends, getFriendRequests } from "../services/friend.service";
 import { getBalance } from "../services/balance.service";
-import "../styles/sidebar.css";
+
 import AddFriendModal from "./AddFriendModal";
+import FriendRequestsModal from "./FriendRequestsModal";
+
+import "../styles/sidebar.css";
 
 const Sidebar = ({ onSelectFriend }) => {
   const [friends, setFriends] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [requests, setRequests] = useState([]);
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showRequests, setShowRequests] = useState(false);
+
   const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
-    const fetchFriends = async () => {
+    const fetchData = async () => {
       try {
         const user = JSON.parse(localStorage.getItem("user"));
 
-        const res = await getFriends(user.token);
+        const [friendsRes, requestsRes] = await Promise.all([
+          getFriends(user.token),
+          getFriendRequests(user.token),
+        ]);
 
-        const formattedFriends = res.data.map((f) => {
-          return f.requester._id === user._id ? f.recipient : f.requester;
-        });
+        // FRIENDS
+        const formattedFriends = friendsRes.data.map((f) =>
+          f.requester._id === user._id ? f.recipient : f.requester,
+        );
 
         const friendsWithBalance = await Promise.all(
           formattedFriends.map(async (friend) => {
             try {
               const balanceRes = await getBalance(friend._id, user.token);
-
-              return {
-                ...friend,
-                balance: balanceRes.data,
-              };
+              return { ...friend, balance: balanceRes.data };
             } catch {
               return { ...friend, balance: null };
             }
@@ -36,12 +45,13 @@ const Sidebar = ({ onSelectFriend }) => {
         );
 
         setFriends(friendsWithBalance);
+        setRequests(requestsRes.data);
       } catch (err) {
         console.error(err);
       }
     };
 
-    fetchFriends();
+    fetchData();
   }, []);
 
   const handleSelect = (friend) => {
@@ -49,28 +59,40 @@ const Sidebar = ({ onSelectFriend }) => {
     onSelectFriend(friend);
   };
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   return (
     <div className="sidebar">
       {/* HEADER */}
       <div className="sidebar-header">
-        <div>
+        {/* LEFT */}
+        <div className="header-left">
           <h2>Friends</h2>
           <p className="subtext">Manage your lending circle</p>
         </div>
 
-        <button className="add-friend" onClick={() => setShowModal(true)}>
-          + Add
-        </button>
-      </div>
+        {/* RIGHT */}
+        <div className="header-actions">
+          <div className="notif-wrapper" onClick={() => setShowRequests(true)}>
+            <Bell size={20} />
 
-      {showModal && <AddFriendModal onClose={() => setShowModal(false)} />}
+            {requests.length > 0 && (
+              <span className="notif-badge">{requests.length}</span>
+            )}
+          </div>
+
+          <button className="add-friend" onClick={() => setShowAddModal(true)}>
+            + Add
+          </button>
+        </div>
+      </div>
 
       {/* SEARCH */}
       <div className="search-box">
         <input placeholder="Search friends..." />
       </div>
 
-      {/* LIST */}
+      {/* FRIENDS LIST */}
       <div className="friends-list">
         {friends.length === 0 ? (
           <div className="empty-state">
@@ -116,6 +138,20 @@ const Sidebar = ({ onSelectFriend }) => {
           })
         )}
       </div>
+
+      {/* MODALS */}
+      {showAddModal && (
+        <AddFriendModal onClose={() => setShowAddModal(false)} />
+      )}
+
+      {showRequests && (
+        <FriendRequestsModal
+          requests={requests}
+          setRequests={setRequests}
+          token={user.token}
+          onClose={() => setShowRequests(false)}
+        />
+      )}
     </div>
   );
 };
