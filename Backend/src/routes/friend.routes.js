@@ -6,6 +6,7 @@ import {
   acceptRequest,
   rejectRequest,
   getFriends,
+  getFriendRequests,
 } from "../controllers/friend.controller.js";
 
 const router = express.Router();
@@ -24,5 +25,8 @@ router.put("/reject/:id", protect, rejectRequest);
 
 // get friends list
 router.get("/", protect, getFriends);
+
+//get requests list
+router.get("/requests", protect, getFriendRequests);
 
 export default router;

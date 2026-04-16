@@ -107,3 +107,19 @@ export const getFriends = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+//get requests list
+export const getFriendRequests = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const requests = await Friendship.find({
+      recipient: userId,
+      status: "pending",
+    }).populate("requester", "name email");
+
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
