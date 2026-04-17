@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 
 import { getFriends, getFriendRequests } from "../services/friend.service";
+import { getLoans } from "../services/loan.service";
 import { getBalance } from "../services/balance.service";
+
 import Skeleton from "./Skeleton";
 import AddFriendModal from "./AddFriendModal";
 import FriendRequestsModal from "./FriendRequestsModal";
 
 import "../styles/sidebar.css";
 import { getAvatarColor } from "../utils/avatar";
+
 const Sidebar = ({ onSelectFriend }) => {
   const [friends, setFriends] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -18,10 +21,13 @@ const Sidebar = ({ onSelectFriend }) => {
 
   const [activeId, setActiveId] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("user"));
+        setLoading(true);
 
         const [friendsRes, requestsRes] = await Promise.all([
           getFriends(user.token),
@@ -32,18 +38,36 @@ const Sidebar = ({ onSelectFriend }) => {
           f.requester._id === user._id ? f.recipient : f.requester,
         );
 
-        const friendsWithBalance = await Promise.all(
+        const enrichedFriends = await Promise.all(
           formattedFriends.map(async (friend) => {
             try {
+              //  GET BALANCE
               const balanceRes = await getBalance(friend._id, user.token);
-              return { ...friend, balance: balanceRes.data };
+
+              //  GET LOANS
+              const loansRes = await getLoans(friend._id, user.token);
+
+              //  COUNT PENDING REQUESTS
+              const pendingCount = loansRes.data.filter(
+                (l) => l.status === "pending" && l.receiver === user._id,
+              ).length;
+
+              return {
+                ...friend,
+                balance: balanceRes.data,
+                pendingCount,
+              };
             } catch {
-              return { ...friend, balance: null };
+              return {
+                ...friend,
+                balance: null,
+                pendingCount: 0,
+              };
             }
           }),
         );
 
-        setFriends(friendsWithBalance);
+        setFriends(enrichedFriends);
         setRequests(requestsRes.data);
       } catch (err) {
         console.error(err);
@@ -60,23 +84,18 @@ const Sidebar = ({ onSelectFriend }) => {
     onSelectFriend(friend);
   };
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
   return (
     <div className="sidebar">
       {/* HEADER */}
       <div className="sidebar-header">
-        {/* LEFT */}
         <div className="header-left">
           <h2>Friends</h2>
           <p className="subtext">Manage your lending circle</p>
         </div>
 
-        {/* RIGHT */}
         <div className="header-actions">
           <div className="notif-wrapper" onClick={() => setShowRequests(true)}>
             <Bell size={20} />
-
             {requests.length > 0 && (
               <span className="notif-badge">{requests.length}</span>
             )}
@@ -99,13 +118,11 @@ const Sidebar = ({ onSelectFriend }) => {
           [...Array(6)].map((_, i) => (
             <div key={i} className="friend-card">
               <Skeleton width="42px" height="42px" radius="50%" />
-
               <div style={{ flex: 1 }}>
                 <Skeleton width="60%" height="12px" />
                 <div style={{ height: "6px" }} />
                 <Skeleton width="40%" height="10px" />
               </div>
-
               <Skeleton width="50px" height="18px" radius="999px" />
             </div>
           ))
@@ -126,6 +143,7 @@ const Sidebar = ({ onSelectFriend }) => {
                   activeId === friend._id ? "active" : ""
                 }`}
               >
+                {/* AVATAR */}
                 <div
                   className="avatar"
                   style={{ background: getAvatarColor(friend.name) }}
@@ -133,23 +151,36 @@ const Sidebar = ({ onSelectFriend }) => {
                   {friend.name?.charAt(0).toUpperCase()}
                 </div>
 
+                {/* INFO */}
                 <div className="friend-info">
                   <div className="name-block">
                     <h4>{friend.name}</h4>
                     <span className="hint">Tap to view activity</span>
                   </div>
 
-                  <span
-                    className={`badge ${
-                      net > 0 ? "positive" : net < 0 ? "negative" : "neutral"
-                    }`}
-                  >
-                    {net > 0
-                      ? `+${net} ETB`
-                      : net < 0
-                        ? `-${Math.abs(net)} ETB`
-                        : "Settled"}
-                  </span>
+                  {/* RIGHT SIDE */}
+                  <div className="right-section">
+                    {/* PRIORITY: notification */}
+                    {friend.pendingCount > 0 ? (
+                      <span className="msg-badge">{friend.pendingCount}</span>
+                    ) : (
+                      <span
+                        className={`badge ${
+                          net > 0
+                            ? "positive"
+                            : net < 0
+                              ? "negative"
+                              : "neutral"
+                        }`}
+                      >
+                        {net > 0
+                          ? `+${net} ETB`
+                          : net < 0
+                            ? `-${Math.abs(net)} ETB`
+                            : "Settled"}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             );

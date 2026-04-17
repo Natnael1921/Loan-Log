@@ -72,7 +72,12 @@ const ChatArea = ({ selectedFriend }) => {
       minute: "2-digit",
     });
   };
-
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+    }); // e.g. Apr 18
+  };
   const getStatusIcon = (status) => {
     if (status === "pending") return <Clock size={14} />;
     if (status === "accepted") return <CheckCircle size={14} />;
@@ -205,7 +210,10 @@ const ChatArea = ({ selectedFriend }) => {
                       {loan.status}
                     </span>
 
-                    <span className="time">{formatTime(loan.createdAt)}</span>
+                    <span className="time">
+                      {formatDate(loan.createdAt)} •{" "}
+                      {formatTime(loan.createdAt)}
+                    </span>
                   </div>
 
                   {loan.status === "pending" && !isMe && (
