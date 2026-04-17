@@ -3,7 +3,7 @@ import "../styles/chatarea.css";
 import { getLoans, acceptLoan, rejectLoan } from "../services/loan.service";
 import { getBalance } from "../services/balance.service";
 import LoanModal from "./LoanModal";
-
+import { getAvatarColor } from "../utils/avatar";
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -83,7 +83,12 @@ const ChatArea = ({ selectedFriend }) => {
       {/* HEADER */}
       <div className="chat-header">
         <div className="user-info">
-          <div className="avatar big">{selectedFriend.name?.charAt(0)}</div>
+          <div
+            className="avatar big"
+            style={{ background: getAvatarColor(selectedFriend.name) }}
+          >
+            {selectedFriend.name?.charAt(0)}
+          </div>
           <h3>{selectedFriend.name}</h3>
         </div>
 

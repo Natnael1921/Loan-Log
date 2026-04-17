@@ -8,7 +8,7 @@ import AddFriendModal from "./AddFriendModal";
 import FriendRequestsModal from "./FriendRequestsModal";
 
 import "../styles/sidebar.css";
-
+import { getAvatarColor } from "../utils/avatar";
 const Sidebar = ({ onSelectFriend }) => {
   const [friends, setFriends] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -111,7 +111,10 @@ const Sidebar = ({ onSelectFriend }) => {
                   activeId === friend._id ? "active" : ""
                 }`}
               >
-                <div className="avatar">
+                <div
+                  className="avatar"
+                  style={{ background: getAvatarColor(friend.name) }}
+                >
                   {friend.name?.charAt(0).toUpperCase()}
                 </div>
 
