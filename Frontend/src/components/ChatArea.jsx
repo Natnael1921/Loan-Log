@@ -4,6 +4,8 @@ import { getLoans, acceptLoan, rejectLoan } from "../services/loan.service";
 import { getBalance } from "../services/balance.service";
 import LoanModal from "./LoanModal";
 import { getAvatarColor } from "../utils/avatar";
+import { usePresence } from "../hooks/usePresence";
+import { getPresenceText } from "../utils/utils";
 import Skeleton from "./Skeleton";
 import {
   ArrowUpRight,
@@ -21,7 +23,7 @@ const ChatArea = ({ selectedFriend }) => {
   const [loading, setLoading] = useState(true);
   const messagesRef = useRef(null);
   const user = JSON.parse(localStorage.getItem("user"));
-
+  const onlineUsers = usePresence(user);
   useEffect(() => {
     const el = messagesRef.current;
     if (!el) return;
@@ -99,7 +101,19 @@ const ChatArea = ({ selectedFriend }) => {
           >
             {selectedFriend.name?.charAt(0)}
           </div>
-          <h3>{selectedFriend.name}</h3>
+          <div className="name-status">
+            <h3>{selectedFriend.name}</h3>
+
+            <span
+              className={`presence-text ${
+                getPresenceText(selectedFriend, onlineUsers) === "Online"
+                  ? "online"
+                  : ""
+              }`}
+            >
+              {getPresenceText(selectedFriend, onlineUsers)}
+            </span>
+          </div>
         </div>
 
         {balance && (
