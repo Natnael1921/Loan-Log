@@ -4,6 +4,7 @@ import { getLoans, acceptLoan, rejectLoan } from "../services/loan.service";
 import { getBalance } from "../services/balance.service";
 import LoanModal from "./LoanModal";
 import { getAvatarColor } from "../utils/avatar";
+import Skeleton from "./Skeleton";
 import {
   ArrowUpRight,
   ArrowDownLeft,
@@ -17,7 +18,7 @@ const ChatArea = ({ selectedFriend }) => {
   const [loans, setLoans] = useState([]);
   const [balance, setBalance] = useState(null);
   const [showLoanModal, setShowLoanModal] = useState(false);
-
+  const [loading, setLoading] = useState(true);
   const messagesRef = useRef(null);
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -33,6 +34,8 @@ const ChatArea = ({ selectedFriend }) => {
 
     const fetchData = async () => {
       try {
+        setLoading(true);
+
         const loanRes = await getLoans(selectedFriend._id, user.token);
         setLoans(loanRes.data);
 
@@ -40,6 +43,8 @@ const ChatArea = ({ selectedFriend }) => {
         setBalance(balanceRes.data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -94,29 +99,50 @@ const ChatArea = ({ selectedFriend }) => {
 
         {balance && (
           <div className="balance-info">
+            {/* YOU OWE */}
             <div className="bal negative">
               <ArrowUpRight size={16} />
               <div>
                 <span>You owe</span>
-                <b>-{balance.youOwe} ETB</b>
+                <b>
+                  {loading ? (
+                    <Skeleton width="60px" height="12px" />
+                  ) : (
+                    `-${balance?.youOwe || 0} ETB`
+                  )}
+                </b>
               </div>
             </div>
 
+            {/* THEY OWE */}
             <div className="bal positive">
               <ArrowDownLeft size={16} />
               <div>
                 <span>They owe</span>
-                <b>+{balance.theyOwe} ETB</b>
+                <b>
+                  {loading ? (
+                    <Skeleton width="60px" height="12px" />
+                  ) : (
+                    `+${balance?.theyOwe || 0} ETB`
+                  )}
+                </b>
               </div>
             </div>
 
+            {/* NET */}
             <div className="bal net">
               <Scale size={16} />
               <div>
                 <span>Net</span>
                 <b>
-                  {balance.net > 0 ? "+" : ""}
-                  {balance.net} ETB
+                  {loading ? (
+                    <Skeleton width="50px" height="12px" />
+                  ) : (
+                    <>
+                      {balance?.net > 0 ? "+" : ""}
+                      {balance?.net || 0} ETB
+                    </>
+                  )}
                 </b>
               </div>
             </div>
@@ -134,7 +160,26 @@ const ChatArea = ({ selectedFriend }) => {
 
       {/* MESSAGES */}
       <div className="chat-messages" ref={messagesRef}>
-        {loans.length === 0 ? (
+        {loading ? (
+          [...Array(6)].map((_, i) => {
+            const isMe = i % 2 === 0; // alternate sides
+
+            return (
+              <div key={i} className={`message-row ${isMe ? "right" : "left"}`}>
+                <div
+                  className="message-bubble"
+                  style={{
+                    background: isMe ? "#e2e8f0" : "#f1f5f9",
+                  }}
+                >
+                  <Skeleton width="140px" height="12px" />
+                  <div style={{ height: "8px" }} />
+                  <Skeleton width="90px" height="10px" />
+                </div>
+              </div>
+            );
+          })
+        ) : loans.length === 0 ? (
           <div className="empty-chat">
             <p>No transactions yet</p>
             <span>Start by adding a loan </span>
@@ -154,7 +199,6 @@ const ChatArea = ({ selectedFriend }) => {
                     <b>{loan.amount} ETB</b>
                   </p>
 
-                  {/* FOOTER */}
                   <div className="msg-footer">
                     <span className={`status ${loan.status}`}>
                       {getStatusIcon(loan.status)}
@@ -164,7 +208,6 @@ const ChatArea = ({ selectedFriend }) => {
                     <span className="time">{formatTime(loan.createdAt)}</span>
                   </div>
 
-                  {/* ACTIONS */}
                   {loan.status === "pending" && !isMe && (
                     <div className="actions">
                       <button

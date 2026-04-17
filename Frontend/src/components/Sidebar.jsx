@@ -3,7 +3,7 @@ import { Bell } from "lucide-react";
 
 import { getFriends, getFriendRequests } from "../services/friend.service";
 import { getBalance } from "../services/balance.service";
-
+import Skeleton from "./Skeleton";
 import AddFriendModal from "./AddFriendModal";
 import FriendRequestsModal from "./FriendRequestsModal";
 
@@ -17,7 +17,7 @@ const Sidebar = ({ onSelectFriend }) => {
   const [showRequests, setShowRequests] = useState(false);
 
   const [activeId, setActiveId] = useState(null);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,7 +28,6 @@ const Sidebar = ({ onSelectFriend }) => {
           getFriendRequests(user.token),
         ]);
 
-        // FRIENDS
         const formattedFriends = friendsRes.data.map((f) =>
           f.requester._id === user._id ? f.recipient : f.requester,
         );
@@ -48,6 +47,8 @@ const Sidebar = ({ onSelectFriend }) => {
         setRequests(requestsRes.data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -94,7 +95,21 @@ const Sidebar = ({ onSelectFriend }) => {
 
       {/* FRIENDS LIST */}
       <div className="friends-list">
-        {friends.length === 0 ? (
+        {loading ? (
+          [...Array(6)].map((_, i) => (
+            <div key={i} className="friend-card">
+              <Skeleton width="42px" height="42px" radius="50%" />
+
+              <div style={{ flex: 1 }}>
+                <Skeleton width="60%" height="12px" />
+                <div style={{ height: "6px" }} />
+                <Skeleton width="40%" height="10px" />
+              </div>
+
+              <Skeleton width="50px" height="18px" radius="999px" />
+            </div>
+          ))
+        ) : friends.length === 0 ? (
           <div className="empty-state">
             <p>No friends yet</p>
             <span>Add someone to start tracking loans</span>
