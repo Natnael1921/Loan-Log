@@ -104,14 +104,60 @@
 /*  MOBILE  */
 @media (max-width: 768px) {
   .navbar-inner {
-    padding: 14px 16px;
+    padding: 12px 14px;
   }
 
+  /* LOGO */
+  .logo {
+    font-size: 16px;
+    gap: 6px;
+  }
+
+  .logo-img {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* LINKS */
   .nav-links {
-    gap: 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .nav-links a {
-    font-size: 12px;
+    font-size: 11.5px;
+    padding: 4px 6px;
+  }
+
+  .nav-links a::after {
+    display: none;
+  }
+
+  /* REGISTER BUTTON */
+  .register-btn {
+    padding: 6px 10px;
+    font-size: 11.5px;
+    border-radius: 8px;
+  }
+}
+
+/* EXTRA SMALL DEVICES */
+@media (max-width: 420px) {
+  .navbar-inner {
+    padding: 10px 12px;
+  }
+
+
+  .nav-links {
+    gap: 8px;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+  }
+
+  .register-btn {
+    padding: 5px 8px;
   }
 }

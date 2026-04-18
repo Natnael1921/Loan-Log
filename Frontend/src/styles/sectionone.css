@@ -103,7 +103,7 @@
   padding-right: 0;
   display: block;
   margin-left: auto;
-  margin-right: 500px; 
+  margin-right: 500px;
 }
 /* HOW */
 .how {
@@ -180,11 +180,33 @@
   .steps {
     flex-wrap: wrap;
   }
+  .img-placeholder img {
+    margin-left: 160%;
+    height: 130%;
+    transform: rotate(-20deg);
+  }
+  .btn {
+    margin-left: 20%;
+  }
 }
 
 @media (max-width: 600px) {
   .steps {
     flex-direction: column;
     align-items: center;
+  }
+}
+@media (max-width: 900px) {
+  .section-one::after {
+    display: none;
+  }
+}
+@media (max-width: 900px) {
+  .img-placeholder img {
+    height: 130%;
+    max-width: 80%;
+    margin: 0;
+    transform: rotate(-23deg);
+    display: block;
   }
 }
