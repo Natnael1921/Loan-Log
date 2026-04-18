@@ -1,6 +1,71 @@
+/* BASE LAYOUT */
+
 .dashboard {
   display: flex;
   height: 100vh;
   background: #f9fafb;
   overflow: hidden;
+}
+
+/* children containers */
+.dashboard-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  background: white;
+  border-right: 1px solid #eef2f7;
+}
+
+.dashboard-chat {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+}
+
+/*TABLET */
+
+@media (max-width: 1024px) {
+  .dashboard-sidebar {
+    width: 280px;
+  }
+}
+
+/*MOBILE */
+
+@media (max-width: 768px) {
+  .dashboard {
+    position: relative;
+  }
+
+  .dashboard-sidebar,
+  .dashboard-chat {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    transition: transform 0.35s ease;
+    will-change: transform;
+  }
+
+  /* SIDEBAR DEFAULT (visible) */
+  .dashboard-sidebar {
+    transform: translateX(0%);
+    z-index: 2;
+  }
+
+  /* CHAT DEFAULT (hidden right) */
+  .dashboard-chat {
+    transform: translateX(100%);
+    z-index: 1;
+  }
+
+  /* WHEN CHAT ACTIVE */
+  .dashboard .dashboard-sidebar.hide-mobile {
+    transform: translateX(-100%);
+  }
+
+  .dashboard .dashboard-chat.hide-mobile-chat {
+    transform: translateX(0%);
+  }
 }

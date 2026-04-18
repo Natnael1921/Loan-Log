@@ -281,3 +281,39 @@
   background: #2563eb;
   border-radius: 10px;
 }
+/* MOBILE SAFETY FIX */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .sidebar-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .add-friend {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .notif-wrapper {
+    width: 32px;
+    height: 32px;
+  }
+
+  .friend-card {
+    padding: 10px;
+  }
+
+  /* prevent overflow */
+  .right-section {
+    flex-shrink: 0;
+  }
+}
+

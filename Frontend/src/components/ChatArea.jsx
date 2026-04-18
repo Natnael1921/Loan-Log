@@ -10,13 +10,14 @@ import Skeleton from "./Skeleton";
 import {
   ArrowUpRight,
   ArrowDownLeft,
+  ArrowLeft,
   Scale,
   Clock,
   CheckCircle,
   XCircle,
 } from "lucide-react";
 
-const ChatArea = ({ selectedFriend }) => {
+const ChatArea = ({ selectedFriend, onBack }) => {
   const [loans, setLoans] = useState([]);
   const [balance, setBalance] = useState(null);
   const [showLoanModal, setShowLoanModal] = useState(false);
@@ -37,6 +38,8 @@ const ChatArea = ({ selectedFriend }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setLoans([]); 
+        setBalance(null);
 
         const loanRes = await getLoans(selectedFriend._id, user.token);
         setLoans(loanRes.data);
@@ -78,7 +81,7 @@ const ChatArea = ({ selectedFriend }) => {
     return new Date(date).toLocaleDateString([], {
       month: "short",
       day: "numeric",
-    }); // e.g. Apr 18
+    }); 
   };
   const getStatusIcon = (status) => {
     if (status === "pending") return <Clock size={14} />;
@@ -94,6 +97,9 @@ const ChatArea = ({ selectedFriend }) => {
     <div className="chat-area">
       {/* HEADER */}
       <div className="chat-header">
+        <div className="back-btn" onClick={onBack}>
+          <ArrowLeft size={18} />
+        </div>
         <div className="user-info">
           <div
             className="avatar big"

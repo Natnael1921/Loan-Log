@@ -268,14 +268,14 @@
 }
 
 .presence-text.online {
-  color: #16a34a; 
+  color: #16a34a;
   font-weight: 500;
 }
 .name-status {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 7px; 
+  gap: 7px;
 }
 
 .name-status h3 {
@@ -288,4 +288,110 @@
   color: #94a3b8;
   margin: 0;
   line-height: 1;
+}
+/*RESPONSIVE CHAT HEADER FIX */
+
+@media (max-width: 1024px) {
+  .balance-info {
+    gap: 10px;
+  }
+
+  .bal {
+    padding: 4px 8px;
+  }
+
+  .bal b {
+    font-size: 12px;
+  }
+}
+
+/* MOBILE: */
+@media (max-width: 768px) {
+  .chat-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .user-info {
+    flex-shrink: 0;
+  }
+
+  .balance-info {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-left: auto;
+    flex-wrap: nowrap;
+  }
+
+  .bal {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .bal span {
+    font-size: 9px;
+  }
+
+  .bal b {
+    font-size: 10px;
+  }
+
+  .bal svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+@media (max-width: 768px) {
+  .message-bubble {
+    max-width: 100%;
+    padding: 12px 32px;
+  }
+}
+.back-btn {
+  display: none;
+}
+@media (max-width: 768px) {
+  .back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 28px;
+    height: 28px;
+
+    font-size: 18px;
+    color: #0f172a;
+
+    border-radius: 8px;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .back-btn:hover {
+    background: #f1f5f9;
+  }
+
+  .chat-header {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .avatar.big {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .user-info h3 {
+    font-size: 14px;
+  }
+
+  .presence-text {
+    font-size: 10px;
+  }
 }

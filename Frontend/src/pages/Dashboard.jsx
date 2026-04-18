@@ -8,8 +8,22 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <Sidebar onSelectFriend={setSelectedFriend} />
-      <ChatArea selectedFriend={selectedFriend} />
+      {/* SIDEBAR */}
+      <div
+        className={`dashboard-sidebar ${selectedFriend ? "hide-mobile" : ""}`}
+      >
+        <Sidebar onSelectFriend={setSelectedFriend} />
+      </div>
+
+      {/* CHAT */}
+      <div
+        className={`dashboard-chat ${selectedFriend ? "hide-mobile-chat" : ""}`}
+      >
+        <ChatArea
+          selectedFriend={selectedFriend}
+          onBack={() => setSelectedFriend(null)}
+        />
+      </div>
     </div>
   );
 };
