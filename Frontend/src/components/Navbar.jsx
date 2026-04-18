@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import "../styles/navbar.css";
-
+import { useNavigate } from "react-router-dom";
 const Navbar = () => {
+  const navigate = useNavigate();
   return (
     <nav className="navbar">
       <div className="navbar-inner">
-
         {/* LOGO AREA */}
         <div className="logo">
           <img src="/logo.png" alt="logo" className="logo-img" />
-          <span>Lendify</span>
+          <span className="logo-span" onClick={() => navigate("/")}>Lendify</span>{" "}
         </div>
 
         {/* LINKS */}
@@ -21,7 +21,6 @@ const Navbar = () => {
             Register
           </Link>
         </div>
-
       </div>
     </nav>
   );

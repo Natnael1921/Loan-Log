@@ -23,7 +23,9 @@
 
   padding: 18px 24px;
 }
-
+.logo-span {
+  cursor: pointer;
+}
 /*  LOGO  */
 .logo {
   display: flex;
@@ -147,7 +149,6 @@
   .navbar-inner {
     padding: 10px 12px;
   }
-
 
   .nav-links {
     gap: 8px;

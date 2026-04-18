@@ -2,7 +2,18 @@ import { useState, useContext } from "react";
 import { loginUser, registerUser } from "../services/auth.service";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import "../styles/Auth.css";
+import Navbar from "../components/Navbar";
+import "../styles/auth.css";
+
+import {
+  User,
+  Mail,
+  Lock,
+  LogIn,
+  UserPlus,
+  Shield,
+  KeyRound,
+} from "lucide-react";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -38,59 +49,100 @@ const Auth = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
+    <>
+      <Navbar />
 
-        <form onSubmit={handleSubmit}>
-          {!isLogin && (
-            <input
-              type="text"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
-              required
-            />
-          )}
+      <div className="auth-wrapper">
+        <div className="auth-card">
+          {/* LEFT PANEL */}
+          <div className="auth-left">
+            <h1>Manage Your Money With Friends</h1>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={(e) =>
-              setForm({ ...form, email: e.target.value })
-            }
-            required
-          />
+            <p>
+              Track loans, split expenses, and manage balances between friends
+              in a simple and transparent way.
+            </p>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={(e) =>
-              setForm({ ...form, password: e.target.value })
-            }
-            required
-          />
+            <div className="auth-features">
+              <div>
+                <User size={16} /> Manage friends easily
+              </div>
 
-          <button type="submit">
-            {isLogin ? "Login" : "Register"}
-          </button>
-        </form>
+              <div>
+                <Shield size={16} /> Track who owes what
+              </div>
 
-        <p className="switch-text">
-          {isLogin
-            ? "Don't have an account?"
-            : "Already have an account?"}
+              <div>
+                <KeyRound size={16} /> Secure personal accounts
+              </div>
+            </div>
+          </div>
 
-          <span onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? " Register" : " Login"}
-          </span>
-        </p>
+          {/* RIGHT PANEL */}
+          <div className="auth-right">
+            <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
+
+            <form onSubmit={handleSubmit} className="auth-form">
+              {!isLogin && (
+                <div className="input-group">
+                  <User size={16} />
+                  <input
+                    type="text"
+                    placeholder="Full Name"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="input-group">
+                <Mail size={16} />
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="input-group">
+                <Lock size={16} />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={form.password}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <button type="submit">
+                {isLogin ? (
+                  <>
+                    <LogIn size={16} /> Login
+                  </>
+                ) : (
+                  <>
+                    <UserPlus size={16} /> Register
+                  </>
+                )}
+              </button>
+            </form>
+
+            <p className="switch-text">
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
+              <span onClick={() => setIsLogin(!isLogin)}>
+                {isLogin ? " Register" : " Login"}
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
