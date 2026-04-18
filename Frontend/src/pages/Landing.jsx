@@ -1,19 +1,13 @@
-import { Link } from "react-router-dom";
-import "../styles/Landing.css";
-
+import Navbar from "../components/Navbar";
+import SectionOne from "../components/SectionOne";
+import SectionTwo from "../components/SectionTwo";
+import "../styles/landing.css";
 const Landing = () => {
   return (
     <div className="landing">
-      <div className="landing-content">
-        <h1>LoanLog</h1>
-        <p>Track loans with friends easily and transparently</p>
-
-        <div className="landing-buttons">
-          <Link to="/auth" className="btn primary">
-            Get Started
-          </Link>
-        </div>
-      </div>
+      <Navbar />
+      <SectionOne />
+      <SectionTwo />
     </div>
   );
 };

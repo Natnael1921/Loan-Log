@@ -2,7 +2,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   background: #f8fafc;
   min-height: 0;
   overflow: hidden;
@@ -25,7 +25,6 @@
   gap: 12px;
 }
 
-/* avatar stays same but slightly refined */
 .avatar.big {
   width: 44px;
   height: 44px;
@@ -224,7 +223,7 @@
   justify-content: flex-start;
   align-items: center;
 
-  flex-shrink: 0; /* IMPORTANT */
+  flex-shrink: 0; 
 }
 
 .chat-input button {
@@ -289,7 +288,7 @@
   margin: 0;
   line-height: 1;
 }
-/*RESPONSIVE CHAT HEADER FIX */
+/*RESPONSIVE CHAT HEADER  */
 
 @media (max-width: 1024px) {
   .balance-info {

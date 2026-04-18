@@ -1,0 +1,117 @@
+.navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+  height: 60px;
+}
+
+/* CONTAINER */
+.navbar-inner {
+  width: 100%;
+  max-width: 1200px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px 24px;
+}
+
+/*  LOGO  */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  color: #0f172a;
+  letter-spacing: 0.5px;
+}
+
+.logo-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/*  LINKS  */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-links a {
+  text-decoration: none;
+
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: 0.2s ease;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+
+  width: 0%;
+  height: 2px;
+  background: #2563eb;
+
+  transition: 0.25s ease;
+}
+
+.nav-links a:hover {
+  color: #2563eb;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/*  REGISTER BUTTON  */
+.register-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: white !important;
+
+  font-weight: 600;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
+
+  transition: 0.25s ease;
+}
+
+.register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.45);
+}
+
+/*  MOBILE  */
+@media (max-width: 768px) {
+  .navbar-inner {
+    padding: 14px 16px;
+  }
+
+  .nav-links {
+    gap: 14px;
+  }
+
+  .nav-links a {
+    font-size: 12px;
+  }
+}

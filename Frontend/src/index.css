@@ -4,5 +4,5 @@ body{
 html, body, #root {
   height: 100%;
   margin: 0;
-  overflow: hidden; /* 🚀 KILLS PAGE SCROLL */
+  overflow-y: auto;
 }
