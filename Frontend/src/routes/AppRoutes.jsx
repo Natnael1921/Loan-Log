@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Landing from "../pages/landing";
-import Auth from "../pages/auth";
+import Landing from "../pages/Landing";
+import Auth from "../pages/Auth";
 import Dashboard from "../pages/Dashboard";
 const AppRoutes = () => {
   const user = JSON.parse(localStorage.getItem("user"));
