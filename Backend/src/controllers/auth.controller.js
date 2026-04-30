@@ -2,7 +2,7 @@ import User from "../models/User.model.js";
 import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
 import EmailVerification from "../models/EmailVerification.model.js";
-import { generateCode } from "../utils/generateCode.js";
+import { generateCode } from "../utils/generatedCode.js";
 import { sendVerificationEmail } from "../utils/sendEmail.js";
 
 /* 
