@@ -1,7 +1,9 @@
 import User from "../models/User.model.js";
 import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
-
+import EmailVerification from "../models/EmailVerification.model.js";
+import { generateCode } from "../utils/generatedCode.js";
+import { sendVerificationEmail } from "../utils/sendEmail.js";
 /**
  * REGISTER USER
  */
@@ -24,7 +26,7 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // 3. create user (password will be hashed by schema middleware)
+    // 3. create user 
     const user = await User.create({
       name,
       email,
@@ -79,6 +81,65 @@ export const login = async (req, res, next) => {
       name: user.name,
       email: user.email,
       token: generateToken(user._id),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const sendCode = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required",
+      });
+    }
+/*
+
+*/ 
+    // 1. Check if user already exists
+  
+
+    // 2. Check existing verification record
+    let record = await EmailVerification.findOne({ email });
+
+    const now = Date.now();
+
+    // 3. Enforce 60s resend cooldown
+    if (record && record.lastSentAt && now - record.lastSentAt < 60000) {
+      return res.status(400).json({
+        message: "Please wait before requesting another code",
+      });
+    }
+
+    // 4. Generate code
+    const code = generateCode();
+
+    const expiresAt = new Date(now + 5 * 60 * 1000); // 5 minutes
+
+    if (record) {
+      // update existing
+      record.code = code;
+      record.expiresAt = expiresAt;
+      record.verified = false;
+      record.lastSentAt = now;
+      await record.save();
+    } else {
+      // create new
+      await EmailVerification.create({
+        email,
+        code,
+        expiresAt,
+        lastSentAt: now,
+      });
+    }
+
+    // 5. Send email
+    await sendVerificationEmail(email, code);
+
+    res.json({
+      message: "Verification code sent",
     });
   } catch (error) {
     next(error);

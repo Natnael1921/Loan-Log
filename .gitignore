@@ -61,8 +61,3 @@ backend/node_modules/
 *.zip
 *.tar
 *.gz
-
-# ===================
-api
-# ===================
-api.js
