@@ -145,3 +145,48 @@ export const sendCode = async (req, res, next) => {
     next(error);
   }
 };
+
+export const verifyCode = async (req, res, next) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({
+        message: "Email and code are required",
+      });
+    }
+
+    // 1. Find record
+    const record = await EmailVerification.findOne({ email });
+
+    if (!record) {
+      return res.status(400).json({
+        message: "No verification request found",
+      });
+    }
+
+    // 2. Check expiry
+    if (record.expiresAt < new Date()) {
+      return res.status(400).json({
+        message: "Code expired",
+      });
+    }
+
+    // 3. Check code
+    if (record.code !== code) {
+      return res.status(400).json({
+        message: "Invalid code",
+      });
+    }
+
+    // 4. Mark as verified
+    record.verified = true;
+    await record.save();
+
+    res.json({
+      message: "Email verified successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
