@@ -1,32 +1,37 @@
-import nodemailer from "nodemailer";
+import axios from "axios";
 
-export const sendVerificationEmail = async (email, code) => {
+export const sendVerificationEmail = async (toEmail, code) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT,
-      secure: true, // true for 465
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+    await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          email: process.env.EMAIL_FROM,
+          name: "Lendify",
+        },
+        to: [{ email: toEmail }],
+        subject: "Your Verification Code",
+        htmlContent: `
+          <div style="font-family: Arial; text-align: center;">
+            <h2>Email Verification</h2>
+            <p>Your verification code is:</p>
+            <h1 style="letter-spacing: 5px;">${code}</h1>
+            <p>This code expires in 5 minutes.</p>
+          </div>
+        `,
       },
-    });
-
-    await transporter.sendMail({
-      from: `"Lendify" <${process.env.SMTP_USER}>`,
-      to: email,
-      subject: "Your Verification Code",
-      html: `
-        <h2>Email Verification</h2>
-        <p>Your verification code is:</p>
-        <h1>${code}</h1>
-        <p>This code expires in 5 minutes.</p>
-      `,
-    });
-
-    console.log("Email sent successfully");
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
   } catch (error) {
-    console.error("Email error:", error);
+    console.error(
+      "Brevo Email Error:",
+      error.response?.data || error.message
+    );
     throw new Error("Failed to send email");
   }
 };
