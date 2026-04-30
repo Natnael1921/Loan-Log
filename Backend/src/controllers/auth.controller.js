@@ -2,62 +2,22 @@ import User from "../models/User.model.js";
 import generateToken from "../utils/generateToken.js";
 import bcrypt from "bcryptjs";
 import EmailVerification from "../models/EmailVerification.model.js";
-import { generateCode } from "../utils/generatedCode.js";
+import { generateCode } from "../utils/generateCode.js";
 import { sendVerificationEmail } from "../utils/sendEmail.js";
-/**
- * REGISTER USER
+
+/* 
+   LOGIN USER
  */
-export const register = async (req, res, next) => {
-  try {
-    const { name, email, password } = req.body;
-
-    // 1. check missing fields
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        message: "All fields are required",
-      });
-    }
-
-    // 2. check if user exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({
-        message: "User already exists",
-      });
-    }
-
-    // 3. create user 
-    const user = await User.create({
-      name,
-      email,
-      password,
-    });
-
-    // 4. send response
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      token: generateToken(user._id),
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/*LOGIN USER*/
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // 1. validate input
     if (!email || !password) {
       return res.status(400).json({
         message: "Email and password are required",
       });
     }
 
-    // 2. find user
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -66,7 +26,6 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // 3. check password
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
@@ -75,10 +34,9 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // 4. success response
     res.json({
       _id: user._id,
-      name: user.name,
+      username: user.username,
       email: user.email,
       token: generateToken(user._id),
     });
@@ -86,6 +44,10 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+/* 
+   SEND VERIFICATION CODE
+ */
 export const sendCode = async (req, res, next) => {
   try {
     const { email } = req.body;
@@ -95,47 +57,47 @@ export const sendCode = async (req, res, next) => {
         message: "Email is required",
       });
     }
-/*
 
-*/ 
-    // 1. Check if user already exists
-  
+    // 1. Prevent existing users from re-registering
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "Email already registered. Please login instead.",
+      });
+    }
 
-    // 2. Check existing verification record
     let record = await EmailVerification.findOne({ email });
-
     const now = Date.now();
 
-    // 3. Enforce 60s resend cooldown
+    // 2. Resend cooldown (60s)
     if (record && record.lastSentAt && now - record.lastSentAt < 60000) {
       return res.status(400).json({
         message: "Please wait before requesting another code",
       });
     }
 
-    // 4. Generate code
+    // 3. Generate & hash code
     const code = generateCode();
+    const hashedCode = await bcrypt.hash(code, 10);
 
-    const expiresAt = new Date(now + 5 * 60 * 1000); // 5 minutes
+    const expiresAt = new Date(now + 5 * 60 * 1000); // 5 min
 
     if (record) {
-      // update existing
-      record.code = code;
+      record.code = hashedCode;
       record.expiresAt = expiresAt;
       record.verified = false;
       record.lastSentAt = now;
       await record.save();
     } else {
-      // create new
       await EmailVerification.create({
         email,
-        code,
+        code: hashedCode,
         expiresAt,
         lastSentAt: now,
       });
     }
 
-    // 5. Send email
+    // 4. Send email (plain code)
     await sendVerificationEmail(email, code);
 
     res.json({
@@ -146,6 +108,9 @@ export const sendCode = async (req, res, next) => {
   }
 };
 
+/* 
+   VERIFY CODE
+ */
 export const verifyCode = async (req, res, next) => {
   try {
     const { email, code } = req.body;
@@ -156,7 +121,6 @@ export const verifyCode = async (req, res, next) => {
       });
     }
 
-    // 1. Find record
     const record = await EmailVerification.findOne({ email });
 
     if (!record) {
@@ -165,26 +129,90 @@ export const verifyCode = async (req, res, next) => {
       });
     }
 
-    // 2. Check expiry
     if (record.expiresAt < new Date()) {
       return res.status(400).json({
         message: "Code expired",
       });
     }
 
-    // 3. Check code
-    if (record.code !== code) {
+    // compare hashed code
+    const isMatch = await bcrypt.compare(code, record.code);
+
+    if (!isMatch) {
       return res.status(400).json({
         message: "Invalid code",
       });
     }
 
-    // 4. Mark as verified
     record.verified = true;
     await record.save();
 
     res.json({
       message: "Email verified successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* 
+   COMPLETE REGISTRATION
+ */
+export const completeRegister = async (req, res, next) => {
+  try {
+    const { email, username, password, confirmPassword } = req.body;
+
+    if (!email || !username || !password || !confirmPassword) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        message: "Passwords do not match",
+      });
+    }
+
+    const record = await EmailVerification.findOne({ email });
+
+    if (!record || !record.verified) {
+      return res.status(400).json({
+        message: "Email not verified",
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+
+    // Check username uniqueness
+    const usernameTaken = await User.findOne({ username });
+    if (usernameTaken) {
+      return res.status(400).json({
+        message: "Username is already taken",
+      });
+    }
+
+    // Create user
+    const user = await User.create({
+      username,
+      email,
+      password,
+    });
+
+    // Cleanup verification record
+    await EmailVerification.deleteOne({ email });
+
+    res.status(201).json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      token: generateToken(user._id),
     });
   } catch (error) {
     next(error);
