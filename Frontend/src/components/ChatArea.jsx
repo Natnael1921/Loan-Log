@@ -30,7 +30,6 @@ const ChatArea = ({ selectedFriend, onBack }) => {
   useEffect(() => {
     const el = messagesRef.current;
     if (!el) return;
-
     el.scrollTop = el.scrollHeight;
   }, [loans]);
 
@@ -132,7 +131,6 @@ const ChatArea = ({ selectedFriend, onBack }) => {
 
         {balance && (
           <div className="balance-info">
-            {/* YOU OWE */}
             <div className="bal negative">
               <ArrowUpRight size={16} />
               <div>
@@ -147,7 +145,6 @@ const ChatArea = ({ selectedFriend, onBack }) => {
               </div>
             </div>
 
-            {/* THEY OWE */}
             <div className="bal positive">
               <ArrowDownLeft size={16} />
               <div>
@@ -162,7 +159,6 @@ const ChatArea = ({ selectedFriend, onBack }) => {
               </div>
             </div>
 
-            {/* NET */}
             <div className="bal net">
               <Scale size={16} />
               <div>
@@ -227,21 +223,28 @@ const ChatArea = ({ selectedFriend, onBack }) => {
                 className={`message-row ${isMe ? "right" : "left"}`}
               >
                 <div className={`message-bubble ${isMe ? "me" : "them"}`}>
+                  
+                  {/*  FIXED TEXT LOGIC */}
                   <p className="msg-text">
-                    {isMe ? (
+                    {loan.type === "give" ? (
                       <>
-                        <b>{user.username}</b> gave to{" "}
-                        <b>{selectedFriend.username}</b>{" "}
+                        <b>{isMe ? "You" : selectedFriend.username}</b> gave{" "}
+                        <b>{!isMe ? "you" : selectedFriend.username}</b>{" "}
                         <b>{loan.amount} ETB</b>
                       </>
                     ) : (
                       <>
-                        <b>{selectedFriend.username}</b> gave to{" "}
-                        <b>{user.username}</b>{" "}
-                        <b>{loan.amount} ETB</b>
+                        <b>{isMe ? "You" : selectedFriend.username}</b> took{" "}
+                        <b>{loan.amount} ETB</b> from{" "}
+                        <b>{!isMe ? "you" : selectedFriend.username}</b>
                       </>
                     )}
                   </p>
+
+                  {/*  NOTE (REASON) */}
+                  {loan.note && (
+                    <p className="msg-note">Reason :{loan.note}</p>
+                  )}
 
                   <div className="msg-footer">
                     <span className={`status ${loan.status}`}>
