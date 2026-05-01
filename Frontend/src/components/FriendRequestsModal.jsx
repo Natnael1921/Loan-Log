@@ -3,6 +3,8 @@ import {
   rejectFriendRequest,
 } from "../services/friend.service";
 import "../styles/friendrequestmodal.css";
+import { getAvatarColor } from "../utils/avatar";
+
 const FriendRequestsModal = ({ requests, onClose, token, setRequests }) => {
   const handleAccept = async (id) => {
     try {
@@ -30,35 +32,42 @@ const FriendRequestsModal = ({ requests, onClose, token, setRequests }) => {
         {requests.length === 0 ? (
           <div className="empty-state">
             <p>No pending requests</p>
-            <span>You are all caught up  !</span>
+            <span>You are all caught up!</span>
           </div>
         ) : (
-          requests.map((req) => (
-            <div key={req._id} className="request-card">
-              <div className="request-info">
-                <div className="avatar">
-                  {req.requester.name?.charAt(0).toUpperCase()}
+          requests.map((req) => {
+            const username = req.requester?.username || "U";
+
+            return (
+              <div key={req._id} className="request-card">
+                <div className="request-info">
+                  <div
+                    className="avatar"
+                    style={{ background: getAvatarColor(username) }}
+                  >
+                    {username.charAt(0).toUpperCase()}
+                  </div>
+                  <span>{username}</span>
                 </div>
-                <span>{req.requester.name}</span>
-              </div>
 
-              <div className="request-actions">
-                <button
-                  className="accept"
-                  onClick={() => handleAccept(req._id)}
-                >
-                  Accept
-                </button>
+                <div className="request-actions">
+                  <button
+                    className="accept"
+                    onClick={() => handleAccept(req._id)}
+                  >
+                    Accept
+                  </button>
 
-                <button
-                  className="reject"
-                  onClick={() => handleReject(req._id)}
-                >
-                  Reject
-                </button>
+                  <button
+                    className="reject"
+                    onClick={() => handleReject(req._id)}
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

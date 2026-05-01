@@ -23,8 +23,10 @@ const ChatArea = ({ selectedFriend, onBack }) => {
   const [showLoanModal, setShowLoanModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const messagesRef = useRef(null);
+
   const user = JSON.parse(localStorage.getItem("user"));
   const onlineUsers = usePresence(user);
+
   useEffect(() => {
     const el = messagesRef.current;
     if (!el) return;
@@ -38,7 +40,7 @@ const ChatArea = ({ selectedFriend, onBack }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        setLoans([]); 
+        setLoans([]);
         setBalance(null);
 
         const loanRes = await getLoans(selectedFriend._id, user.token);
@@ -77,12 +79,14 @@ const ChatArea = ({ selectedFriend, onBack }) => {
       minute: "2-digit",
     });
   };
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString([], {
       month: "short",
       day: "numeric",
-    }); 
+    });
   };
+
   const getStatusIcon = (status) => {
     if (status === "pending") return <Clock size={14} />;
     if (status === "accepted") return <CheckCircle size={14} />;
@@ -100,15 +104,19 @@ const ChatArea = ({ selectedFriend, onBack }) => {
         <div className="back-btn" onClick={onBack}>
           <ArrowLeft size={18} />
         </div>
+
         <div className="user-info">
           <div
             className="avatar big"
-            style={{ background: getAvatarColor(selectedFriend.name) }}
+            style={{
+              background: getAvatarColor(selectedFriend.username || "U"),
+            }}
           >
-            {selectedFriend.name?.charAt(0)}
+            {(selectedFriend.username || "U").charAt(0)}
           </div>
+
           <div className="name-status">
-            <h3>{selectedFriend.name}</h3>
+            <h3>{selectedFriend.username}</h3>
 
             <span
               className={`presence-text ${
@@ -187,7 +195,7 @@ const ChatArea = ({ selectedFriend, onBack }) => {
       <div className="chat-messages" ref={messagesRef}>
         {loading ? (
           [...Array(6)].map((_, i) => {
-            const isMe = i % 2 === 0; // alternate sides
+            const isMe = i % 2 === 0;
 
             return (
               <div key={i} className={`message-row ${isMe ? "right" : "left"}`}>
@@ -207,7 +215,7 @@ const ChatArea = ({ selectedFriend, onBack }) => {
         ) : loans.length === 0 ? (
           <div className="empty-chat">
             <p>No transactions yet</p>
-            <span>Start by adding a loan </span>
+            <span>Start by adding a loan</span>
           </div>
         ) : (
           loans.map((loan) => {
@@ -220,8 +228,19 @@ const ChatArea = ({ selectedFriend, onBack }) => {
               >
                 <div className={`message-bubble ${isMe ? "me" : "them"}`}>
                   <p className="msg-text">
-                    {loan.type === "give" ? "You gave" : "You received"}{" "}
-                    <b>{loan.amount} ETB</b>
+                    {isMe ? (
+                      <>
+                        <b>{user.username}</b> gave to{" "}
+                        <b>{selectedFriend.username}</b>{" "}
+                        <b>{loan.amount} ETB</b>
+                      </>
+                    ) : (
+                      <>
+                        <b>{selectedFriend.username}</b> gave to{" "}
+                        <b>{user.username}</b>{" "}
+                        <b>{loan.amount} ETB</b>
+                      </>
+                    )}
                   </p>
 
                   <div className="msg-footer">

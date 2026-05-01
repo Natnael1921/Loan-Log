@@ -35,21 +35,17 @@ const Sidebar = ({ onSelectFriend }) => {
         ]);
 
         const formattedFriends = friendsRes.data.map((f) =>
-          f.requester._id === user._id ? f.recipient : f.requester,
+          f.requester._id === user._id ? f.recipient : f.requester
         );
 
         const enrichedFriends = await Promise.all(
           formattedFriends.map(async (friend) => {
             try {
-              //  GET BALANCE
               const balanceRes = await getBalance(friend._id, user.token);
-
-              //  GET LOANS
               const loansRes = await getLoans(friend._id, user.token);
 
-              //  COUNT PENDING REQUESTS
               const pendingCount = loansRes.data.filter(
-                (l) => l.status === "pending" && l.receiver === user._id,
+                (l) => l.status === "pending" && l.receiver === user._id
               ).length;
 
               return {
@@ -64,7 +60,7 @@ const Sidebar = ({ onSelectFriend }) => {
                 pendingCount: 0,
               };
             }
-          }),
+          })
         );
 
         setFriends(enrichedFriends);
@@ -134,6 +130,7 @@ const Sidebar = ({ onSelectFriend }) => {
         ) : (
           friends.map((friend) => {
             const net = friend.balance?.net;
+            const username = friend.username || "U";
 
             return (
               <div
@@ -146,38 +143,39 @@ const Sidebar = ({ onSelectFriend }) => {
                 {/* AVATAR */}
                 <div
                   className="avatar"
-                  style={{ background: getAvatarColor(friend.name) }}
+                  style={{ background: getAvatarColor(username) }}
                 >
-                  {friend.name?.charAt(0).toUpperCase()}
+                  {username.charAt(0).toUpperCase()}
                 </div>
 
                 {/* INFO */}
                 <div className="friend-info">
                   <div className="name-block">
-                    <h4>{friend.name}</h4>
+                    <h4>{username}</h4>
                     <span className="hint">Tap to view activity</span>
                   </div>
 
                   {/* RIGHT SIDE */}
                   <div className="right-section">
-                    {/* PRIORITY: notification */}
                     {friend.pendingCount > 0 ? (
-                      <span className="msg-badge">{friend.pendingCount}</span>
+                      <span className="msg-badge">
+                        {friend.pendingCount}
+                      </span>
                     ) : (
                       <span
                         className={`badge ${
                           net > 0
                             ? "positive"
                             : net < 0
-                              ? "negative"
-                              : "neutral"
+                            ? "negative"
+                            : "neutral"
                         }`}
                       >
                         {net > 0
                           ? `+${net} ETB`
                           : net < 0
-                            ? `-${Math.abs(net)} ETB`
-                            : "Settled"}
+                          ? `-${Math.abs(net)} ETB`
+                          : "Settled"}
                       </span>
                     )}
                   </div>
