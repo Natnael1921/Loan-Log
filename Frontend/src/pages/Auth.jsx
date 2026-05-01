@@ -22,9 +22,10 @@ import {
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-
-  //step control
   const [step, setStep] = useState(1);
+
+  //  loading state
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -40,6 +41,11 @@ const Auth = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    //  prevent double clicks
+    if (loading) return;
+
+    setLoading(true);
 
     try {
       // LOGIN FLOW
@@ -83,6 +89,9 @@ const Auth = () => {
       }
     } catch (err) {
       alert(err.response?.data?.message || "Something went wrong");
+    } finally {
+      //  always stop loading
+      setLoading(false);
     }
   };
 
@@ -92,7 +101,8 @@ const Auth = () => {
 
       <div className="auth-wrapper">
         <div className="auth-card">
-          {/* LEFT PANEL */}
+
+          {/* LEFT */}
           <div className="auth-left">
             <h1>Manage Your Money With Friends</h1>
 
@@ -116,7 +126,7 @@ const Auth = () => {
             </div>
           </div>
 
-          {/* RIGHT PANEL */}
+          {/* RIGHT */}
           <div className="auth-right">
             <h2>
               {isLogin
@@ -129,6 +139,9 @@ const Auth = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="auth-form">
+
+              {/* inputs stay SAME (no change needed) */}
+
               {/* EMAIL */}
               {!isLogin && step === 1 && (
                 <div className="input-group">
@@ -208,7 +221,7 @@ const Auth = () => {
                 </>
               )}
 
-              {/* LOGIN FORM */}
+              {/* LOGIN */}
               {isLogin && (
                 <>
                   <div className="input-group">
@@ -239,8 +252,10 @@ const Auth = () => {
                 </>
               )}
 
-              <button type="submit">
-                {isLogin
+              <button type="submit" disabled={loading}>
+                {loading
+                  ? "Loading..."
+                  : isLogin
                   ? "Login"
                   : step === 1
                   ? "Send Code"
@@ -255,7 +270,7 @@ const Auth = () => {
               <span
                 onClick={() => {
                   setIsLogin(!isLogin);
-                  setStep(1); // reset steps
+                  setStep(1);
                 }}
               >
                 {isLogin ? " Register" : " Login"}
