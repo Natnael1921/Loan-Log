@@ -1,7 +1,7 @@
 import User from "../models/User.model.js";
 import Friendship from "../models/Friendship.model.js";
 
-//search users
+// SEARCH USERS
 export const searchUsers = async (req, res) => {
   try {
     const keyword = req.query.q;
@@ -12,7 +12,7 @@ export const searchUsers = async (req, res) => {
 
     const users = await User.find({
       $or: [
-        { name: { $regex: keyword, $options: "i" } },
+        { username: { $regex: keyword, $options: "i" } },
         { email: { $regex: keyword, $options: "i" } },
       ],
     }).select("-password");
@@ -23,7 +23,7 @@ export const searchUsers = async (req, res) => {
   }
 };
 
-//send friend request
+// SEND FRIEND REQUEST
 export const sendRequest = async (req, res) => {
   try {
     const requesterId = req.user._id;
@@ -55,7 +55,7 @@ export const sendRequest = async (req, res) => {
   }
 };
 
-//accept request
+// ACCEPT REQUEST
 export const acceptRequest = async (req, res) => {
   try {
     const requestId = req.params.id;
@@ -75,7 +75,7 @@ export const acceptRequest = async (req, res) => {
   }
 };
 
-//reject request
+// REJECT REQUEST
 export const rejectRequest = async (req, res) => {
   try {
     const requestId = req.params.id;
@@ -88,7 +88,7 @@ export const rejectRequest = async (req, res) => {
   }
 };
 
-//get friend list
+// GET FRIENDS
 export const getFriends = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -100,7 +100,7 @@ export const getFriends = async (req, res) => {
           $or: [{ requester: userId }, { recipient: userId }],
         },
       ],
-    }).populate("requester recipient", "name email");
+    }).populate("requester recipient", "username email");
 
     res.json(friends);
   } catch (error) {
@@ -108,7 +108,7 @@ export const getFriends = async (req, res) => {
   }
 };
 
-//get requests list
+// GET FRIEND REQUESTS
 export const getFriendRequests = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -116,7 +116,7 @@ export const getFriendRequests = async (req, res) => {
     const requests = await Friendship.find({
       recipient: userId,
       status: "pending",
-    }).populate("requester", "name email");
+    }).populate("requester", "username email");
 
     res.json(requests);
   } catch (err) {

@@ -42,12 +42,14 @@ const AddFriendModal = ({ onClose }) => {
         {/* HEADER */}
         <div className="modal-header">
           <h3>Add Friend</h3>
-          <button className="close-icon" onClick={onClose}>✕</button>
+          <button className="close-icon" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
         {/* INPUT */}
         <input
-          placeholder="Search by name..."
+          placeholder="Search by username or email..."
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
         />
@@ -66,11 +68,14 @@ const AddFriendModal = ({ onClose }) => {
               <div className="user-info">
                 <div
                   className="avatar"
-                  style={{ background: getAvatarColor(u.name) }}
+                  style={{
+                    background: getAvatarColor(u.username || "U"),
+                  }}
                 >
-                  {u.name.charAt(0).toUpperCase()}
+                  {(u.username || "U").charAt(0).toUpperCase()}
                 </div>
-                <span>{u.name}</span>
+
+                <span>{u.username}</span>
               </div>
 
               <button
