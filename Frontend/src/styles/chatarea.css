@@ -2,7 +2,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   background: #f8fafc;
   min-height: 0;
   overflow: hidden;
@@ -403,7 +403,7 @@
 @media (max-width: 768px) {
 
   .chat-area {
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     position: relative;
   }

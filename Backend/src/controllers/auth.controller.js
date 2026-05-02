@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import EmailVerification from "../models/EmailVerification.model.js";
 import { generateCode } from "../utils/generatedCode.js";
 import { sendVerificationEmail } from "../utils/sendEmail.js";
-
+import { sendWelcomeEmail } from "../utils/sendEmail.js";
 /* 
    LOGIN USER
  */
@@ -204,7 +204,10 @@ export const completeRegister = async (req, res, next) => {
       email,
       password,
     });
-
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(user.email, user.username).catch((err) => {
+      console.error("Welcome email failed:", err.message);
+    });
     // Cleanup verification record
     await EmailVerification.deleteOne({ email });
 
