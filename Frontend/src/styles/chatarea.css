@@ -436,3 +436,35 @@
     padding: 16px;
   }
 }
+@media (max-width: 480px) {
+
+  .chat-area {
+    height: 100dvh; 
+  }
+
+  .chat-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+  }
+
+  .chat-input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    background: white;
+  }
+
+  .chat-messages {
+    position: absolute;
+    top: 65px;   
+    bottom: 85px; 
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+  }
+}
